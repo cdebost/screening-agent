@@ -1,0 +1,8 @@
+{
+    "name": "screening-agent",
+    "version": "0.0.1",
+    "author": "Corentin Debost",
+    "dependencies": {
+        "montage": "~0.15.0"
+    }
+}
