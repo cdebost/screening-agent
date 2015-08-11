@@ -43,12 +43,13 @@ var socketAgent = require("./lib/socket-agent").socketAgent;
  */
 var run = exports.run = function(screeningOrigin) {
     if (!!run._initialized) {
-        throw new Error("Screening Agent was already initialized");
+        throw new Error("Attempted to re-initialize the Screening Agent. Initialization may only be performed " +
+            "once per run");
     }
 
     loadSocketIO(screeningOrigin).then(function() {
         return;
-    }, function(err) {
+    }).catch(function(err) {
         throw err;
     }).then(function() {
         initSocket(io, screeningOrigin);
@@ -58,16 +59,21 @@ var run = exports.run = function(screeningOrigin) {
 };
 
 var loadSocketIO = function(screeningOrigin) {
-    return new Promise(function(resolve, reject) {
-        var script = document.createElement("script");
-            script.async = true;
-            script.src = screeningOrigin + "/socket.io/socket.io.js";
+    // Take out the tail slash
+    if (screeningOrigin.substring(screeningOrigin.length-1) === "/") {
+        screeningOrigin = screeningOrigin.substring(0, screeningOrigin.length-1);
+    }
 
+    var script = document.createElement("script");
+        script.async = true;
+        script.src = screeningOrigin + "/socket.io/socket.io.js";
+
+    return new Promise(function(resolve) {
         script.addEventListener("load", function() {
             resolve();
         });
         script.addEventListener("error", function() {
-            reject(new Error("Unable to load the socket.io script at", script.src));
+            throw new Error("Unable to load the socket.io script at " + script.src);
         })
 
         document.getElementsByTagName("head")[0].appendChild(script);
