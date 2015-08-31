@@ -83,9 +83,7 @@ var loadSocketIO = function(screeningOrigin) {
 var initSocket = function(io, screeningOrigin) {
     var socket = io(screeningOrigin, { path: "/socket.io" });
 
-    socket.emit("initSocketAgent", navigator.userAgent, function (id) {
-        socketAgent.init(socket, id);
-    });
+    socketAgent.init(socket, screeningOrigin);
 };
 
 
