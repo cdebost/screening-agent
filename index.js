@@ -38,20 +38,16 @@ var socketAgent = require("./lib/socket-agent").socketAgent;
 
 /**
  * Setup the screening-agent. Should only be done once each time an app is run.
- * @function run
- * @param screening_origin The URL origin of the server (i.e. the location at which the control room is hosted)
+ * @param screeningOrigin The URL of the screening server, e.g. "http://192.168.1.1:8081"
  */
 var run = exports.run = function(screeningOrigin) {
     if (!!run._initialized) {
-        throw new Error("Attempted to re-initialize the Screening Agent. Initialization may only be performed " +
-            "once per run");
+        throw new Error("Screening agent is already intialized");
     }
 
-    loadSocketIO(screeningOrigin).then(function() {
-        return;
-    }).catch(function(err) {
-        throw err;
-    }).then(function() {
+    loadSocketIO(screeningOrigin)
+    .then(function() {
+        /*global io*/
         initSocket(io, screeningOrigin);
     });
 
@@ -68,13 +64,13 @@ var loadSocketIO = function(screeningOrigin) {
         script.async = true;
         script.src = screeningOrigin + "/socket.io/socket.io.js";
 
-    return new Promise(function(resolve) {
+    return new Promise(function(resolve, reject) {
         script.addEventListener("load", function() {
             resolve();
         });
         script.addEventListener("error", function() {
-            throw new Error("Unable to load the socket.io script at " + script.src);
-        })
+            reject(new Error("Unable to load the socket.io script at " + script.src));
+        });
 
         document.getElementsByTagName("head")[0].appendChild(script);
     });

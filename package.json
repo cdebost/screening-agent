@@ -2,6 +2,7 @@
     "name": "screening-agent",
     "version": "0.0.1",
     "author": "Corentin Debost",
+    "main": "index.js",
     "dependencies": {
         "montage": "~0.15.0"
     }
